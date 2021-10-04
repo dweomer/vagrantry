@@ -145,12 +145,12 @@ variable "nic_type" {
 
 local "vm" {
   expression = {
-    cpus        = var.cpus
-    memory      = var.memory
-    disk_name   = try(coalesce(var.disk_name, var.defaults[var.provider]["disk_name"]), null)
-    disk_type   = try(coalesce(var.disk_type, var.defaults[var.provider]["disk_type"]), null)
-    disk_size   = var.disk_size
-    nic_type    = try(coalesce(var.nic_type, var.defaults[var.provider]["nic_type"]), null)
+    cpus      = var.cpus
+    memory    = var.memory
+    disk_name = try(coalesce(var.disk_name, var.defaults[var.provider]["disk_name"]), null)
+    disk_type = try(coalesce(var.disk_type, var.defaults[var.provider]["disk_type"]), null)
+    disk_size = var.disk_size
+    nic_type  = try(coalesce(var.nic_type, var.defaults[var.provider]["nic_type"]), null)
   }
 }
 
