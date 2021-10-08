@@ -20,13 +20,13 @@ source "virtualbox-iso" "vagrant" {
   iso_target_extension = local.iso.target.extension
   iso_urls             = formatlist("%s/%s", distinct(var.iso_mirrors), local.iso_path)
   nic_type             = local.vm.nic_type
-  output_directory     = "${local.output.directory}/vbox"
+  output_directory     = "${local.output.root}.vbox"
   shutdown_command     = var.shutdown_command
   shutdown_timeout     = var.shutdown_timeout
   ssh_username         = var.ssh_username
   ssh_password         = var.ssh_password
   ssh_wait_timeout     = var.ssh_wait_timeout
-  vm_name              = "${local.output.name}"
+  vm_name              = local.vm.name
 
   vboxmanage = [
     ["modifyvm", "{{.Name}}", "--hpet", "on"],
@@ -49,7 +49,6 @@ source "virtualbox-iso" "vagrant" {
 local "virtualbox" {
   expression = {
     build = var.provider == "virtualbox" ? ["build"] : []
-    path  = try("${local.output.directory}/centos/${local.semver_core}/${local.arch}/${local.output.name}", null)
   }
 }
 
@@ -67,12 +66,12 @@ build {
     post-processor "vagrant" {
       compression_level    = 9
       keep_input_artifact  = true
-      output               = "${local.virtualbox.path}.${var.provider}.box"
+      output               = "${local.output.root}.${var.provider}.box"
       vagrantfile_template = local.vagrantfile.template
       provider_override    = var.provider
     }
     post-processor "manifest" {
-      output     = "${local.virtualbox.path}.packer-manifest.json"
+      output     = "${local.output.root}.packer-manifest.json"
       strip_time = true
       custom_data = {
         arch        = local.arch
@@ -85,14 +84,10 @@ build {
   }
   post-processors {
     post-processor "artifice" {
-      files = ["${local.output.directory}/vbox/**"]
+      files = ["${local.output.root}.vbox/**"]
     }
     post-processor "compress" {
-      output = "${local.virtualbox.path}.vbox.tar.gz"
-    }
-    post-processor "manifest" {
-      output     = "${local.virtualbox.path}.packer-manifest.json"
-      strip_time = true
+      output = "${local.output.root}.vbox.tar"
     }
   }
 }

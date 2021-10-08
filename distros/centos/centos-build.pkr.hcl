@@ -50,7 +50,7 @@ local "build" {
     metadata = var.build_metadata
     timestamp = coalesce(
       var.build_timestamp,
-      try(trimspace(file("${path.cwd}/${var.output_directory}/.timestamp")), null),
+      try(trimspace(file("${abspath(var.output_directory)}/.timestamp")), null),
       formatdate("YYYYMMDDhhmmss", timestamp()),
     )
   }
@@ -73,9 +73,8 @@ variable "output_name" {
 
 local "output" {
   expression = {
-    directory = "${path.cwd}/${var.output_directory}/${local.build.timestamp}"
-    format    = try(coalesce(var.output_format, var.defaults[var.provider]["output_format"]), null)
-    name      = coalesce(var.output_name, format("centos-%s.%s-%s", local.semver_tag, local.iso.arch, lower(local.iso.edition)))
+    format = try(coalesce(var.output_format, var.defaults[var.provider]["output_format"]), null)
+    root   = join("/", [var.output_directory, local.build.timestamp, "centos", local.semver_core, local.arch, local.vm.name])
   }
 }
 
@@ -145,6 +144,7 @@ variable "nic_type" {
 
 local "vm" {
   expression = {
+    name      = coalesce(var.output_name, format("centos-%s.%s-%s", local.semver_tag, local.iso.arch, lower(local.iso.edition)))
     cpus      = var.cpus
     memory    = var.memory
     disk_name = try(coalesce(var.disk_name, var.defaults[var.provider]["disk_name"]), null)
@@ -216,14 +216,16 @@ source "null" "centos" {
 }
 
 build {
-  sources = ["null.centos"]
+  source "null.centos" {
+    name = "build-centos"
+  }
   provisioner "shell-local" {
     inline = [
-      "echo ARCH:       '${jsonencode(local.arch)}'",
-      "echo BUILD:      '${jsonencode(local.build)}'",
-      "echo OUTPUT:     '${jsonencode(local.output)}'",
-      "echo ISO:        '${jsonencode(local.iso)}'",
-      "echo VM:         '${jsonencode(local.vm)}'",
+      "echo ARCH:   '${jsonencode(local.arch)}'",
+      "echo BUILD:  '${jsonencode(local.build)}'",
+      "echo OUTPUT: '${jsonencode(local.output)}'",
+      "echo ISO:    '${jsonencode(local.iso)}'",
+      "echo VM:     '${jsonencode(local.vm)}'",
     ]
   }
 }
