@@ -37,7 +37,7 @@ local "cloud-box" {
     )
     name = coalesce(
       try(local.cloud.target.box_name, null),
-      format("centos-%s.%s-%s", local.semver_major, local.semver_minor, local.arch),
+      format("fedora-%s-%s", local.semver_major, local.arch),
     )
     version = coalesce(
       try(local.cloud.target.box_version, null),
@@ -46,9 +46,9 @@ local "cloud-box" {
     providers = { for name, file in local.cloud.provider_files : name => {
       file = file,
       url = try(
-        format("https://%s/centos/%s/%s/%s.%s.box",
+        format("https://%s/fedora/%s/%s/%s.%s.box",
           local.cloud.target.box_download_root,
-          urlencode(local.semver_core),
+          urlencode(local.iso.version),
           urlencode(local.arch),
           urlencode(local.vm.name),
           name,

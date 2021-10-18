@@ -7,19 +7,8 @@ if [[ ! -e _output/.timestamp ]]; then
     date --utc +%Y%m%d%H%M%S > _output/.timestamp
 fi
 
-for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.2003 7.7.1908 7.6.1810 7.5.1804 7.4.1708 7.3.1611"}; do
-    case $version in
-        8.2.*|8.3.*)
-            edition=minimal
-            ;;
-        8.*)
-            edition=dvd1
-            ;;
-        7.*)
-            edition=Minimal
-            ;;
-    esac
-
+for version in ${VERSIONS:="34-1.2 33-1.2 32-1.6"}; do
+    edition=dvd
     # build the vms
     if [[ -n ${VAGRANTRY_BUILD:=} ]]; then
         for provider in ${PROVIDERS:="libvirt virtualbox vmware"}; do
@@ -29,7 +18,7 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
                 --var iso_edition="$edition" \
                 --var provider="$provider" \
                 --var headless="${VAGRANTRY_BUILD_HEADLESS:=true}" \
-            ./distros/centos/.
+            ./distros/fedora/.
         done
     fi
 
@@ -40,7 +29,7 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
             --var iso_version="$version" \
             --var iso_edition="$edition" \
             --var publish=compress://${VAGRANTRY_PUBLISH_COMPRESS} \
-        ./distros/centos/.
+        ./distros/fedora/.
     fi
 
     # checksum all `*.box` and `*.tar*` files
@@ -50,7 +39,7 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
             --var iso_version="$version" \
             --var iso_edition="$edition" \
             --var publish=checksum://${VAGRANTRY_PUBLISH_CHECKSUM} \
-        ./distros/centos/.
+        ./distros/fedora/.
     fi
 
     # conditionally publish via rsync
@@ -60,7 +49,7 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
             --var iso_version="$version" \
             --var iso_edition="$edition" \
             --var publish="rsync://${VAGRANTRY_PUBLISH_RSYNC}" \
-        ./distros/centos/.
+        ./distros/fedora/.
     fi
 
     # conditionally publish via s3
@@ -70,7 +59,7 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
             --var iso_version="$version" \
             --var iso_edition="$edition" \
             --var publish="s3://${VAGRANTRY_PUBLISH_S3}" \
-        ./distros/centos/.
+        ./distros/fedora/.
     fi
 
     # conditionally publish to vagrant-cloud
@@ -80,6 +69,6 @@ for version in ${VERSIONS:="8.4.2105 8.3.2011 8.2.2004 8.1.1911 7.9.2009 7.8.200
             --var iso_version="$version" \
             --var iso_edition="$edition" \
             --var publish="vagrant-cloud://${VAGRANTRY_PUBLISH_CLOUD}" \
-        ./distros/centos/.  # dweomer,,https://virt.dweomer.io/vagrant/boxes
+        ./distros/fedora/.  # dweomer,,https://virt.dweomer.io/vagrant/boxes
     fi
 done

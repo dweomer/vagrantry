@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.provider :virtualbox do |v,o|
+        o.vm.base_mac = "525400278b50"
+    end
+    config.vm.provider :libvirt do |v,o|
+        v.driver = 'kvm'
+        v.storage_pool_name = 'default'
+    end
+    config.vm.synced_folder '.', '/vagrant', disabled: true
+end

@@ -19,6 +19,7 @@ variable "iso_vault_checksum_file" {
 
 variable "iso_mirrors" {
   default = [
+    "file:///srv/centos", # setup an nfs mount to your nas with mirrored content ...
     "http://centos-distro.cavecreek.net/centos",
     "http://mirror.rackspace.com/CentOS",
     "http://mirror.arizona.edu/centos",
