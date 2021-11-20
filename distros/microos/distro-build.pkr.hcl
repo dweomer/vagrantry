@@ -24,13 +24,18 @@ variable "defaults" {
 
 variable "headless" {
   type    = bool
-  default = false
+  default = true
 }
 
 variable "provider" {
   type        = string
-  default     = null
+  default     = "unknown"
   description = "`libvirt` or `virtualbox`"
+}
+
+variable "build_version" {
+  type    = string
+  default = "16.0.0"
 }
 
 variable "build_metadata" {
@@ -47,6 +52,7 @@ variable "build_timestamp" {
 
 local "build" {
   expression = {
+    version  = coalesce(var.build_version, "16.0.0")
     metadata = var.build_metadata
     timestamp = coalesce(
       var.build_timestamp,
@@ -74,46 +80,46 @@ variable "output_name" {
 local "output" {
   expression = {
     format = try(coalesce(var.output_format, var.defaults[var.provider]["output_format"]), null)
-    root   = join("/", [var.output_directory, local.build.timestamp, "centos", local.semver_core, local.arch, local.vm.name])
+    root   = join("/", [var.output_directory, local.build.timestamp, "microos", local.semver_major, local.arch, local.vm.name])
   }
 }
 
-variable "kickstart_dir" {
+variable "autoyast_dir" {
   type    = string
   default = null
 }
 
-variable "kickstart_url" {
+variable "autoyast_url" {
   type    = string
   default = null
 }
 
-variable "kickstart_param" {
+variable "autoyast_param" {
   type    = string
   default = null
 }
 
-local "kickstart" {
+local "autoyast" {
   expression = {
-    dir   = coalesce(var.kickstart_dir, "${path.root}/kickstart")
-    url   = coalesce(var.kickstart_url, "http://{{ .HTTPIP }}:{{ .HTTPPort }}/${local.semver_major}/${lower(local.iso.edition)}.cfg")
-    param = coalesce(var.kickstart_param, local.semver_major == "7" ? "ks" : "inst.ks")
+    dir   = coalesce(var.autoyast_dir, "${path.root}/autoyast")
+    url   = coalesce(var.autoyast_url, "http://{{ .HTTPIP }}:{{ .HTTPPort }}/${var.provider}.xml")
+    param = coalesce(var.autoyast_param, "lang=en_US textmode=1 autoyast")
   }
 }
 
 variable "boot_wait" {
   type    = string
-  default = "5s"
+  default = "10s"
 }
 
 variable "boot_append" {
   type    = string
-  default = "net.ifnames=0 biosdevname=0"
+  default = "biosdevname=0 net.ifnames=0 netdevice=eth0 netsetup=dhcp"
 }
 
 variable "cpus" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "disk_size" {
@@ -133,7 +139,7 @@ variable "disk_name" {
 
 variable "memory" {
   type        = number
-  default     = 1024
+  default     = 2048
   description = "megabytes"
 }
 
@@ -144,7 +150,7 @@ variable "nic_type" {
 
 local "vm" {
   expression = {
-    name      = coalesce(var.output_name, format("centos-%s.%s-%s", local.semver_tag, local.iso.arch, lower(local.iso.edition)))
+    name      = coalesce(var.output_name, format("microos-v%s.%s-%s", local.build.version, local.iso.arch, lower(local.iso.edition)))
     cpus      = var.cpus
     memory    = var.memory
     disk_name = try(coalesce(var.disk_name, var.defaults[var.provider]["disk_name"]), null)
@@ -156,7 +162,7 @@ local "vm" {
 
 variable "shutdown_command" {
   type    = string
-  default = "/sbin/shutdown --no-wall -P now"
+  default = "sudo /sbin/shutdown --no-wall -P now"
 }
 
 variable "shutdown_timeout" {
@@ -166,7 +172,7 @@ variable "shutdown_timeout" {
 
 variable "ssh_username" {
   type    = string
-  default = "root"
+  default = "vagrant"
 }
 
 variable "ssh_password" {
@@ -181,7 +187,7 @@ variable "ssh_wait_timeout" {
 
 locals {
   arch         = lookup({ "x86_64" : "amd64", "aarch64" : "arm64" }, local.iso.arch, local.iso.arch)
-  semver       = regex("^v?(?P<major>0|[1-9]\\d*)\\.(?P<minor>0|[1-9]\\d*)\\.(?P<patch>0|[1-9]\\d*)(?:-(?P<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?P<meta>[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", local.iso.version)
+  semver       = regex("^v?(?P<major>0|[1-9]\\d*)(?:\\.(?P<minor>0|[1-9]\\d*))?(?:\\.(?P<patch>0|[1-9]\\d*))?(?:-(?P<pre>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?P<meta>[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", local.build.version)
   semver_major = try(coalesce(local.semver["major"]), "0")
   semver_minor = try(coalesce(local.semver["minor"]), "0")
   semver_patch = try(coalesce(local.semver["patch"]), "0")
@@ -193,11 +199,11 @@ locals {
     local.semver_meta == "" ? "" : format("+%s", local.semver_meta),
   )
   semver_tag = format("v%s", local.semver_str)
-  iso_path = format(
-    "%s/isos/%s/CentOS-%s-%s.iso", local.iso.version, local.iso.arch,
-    local.semver_major == "7" ? local.semver_major : local.semver_core,
-    local.semver_major == "7" ? format("%s-%s-%s", local.iso.arch, local.iso.edition, local.semver.patch) : format("%s-%s", local.iso.arch, local.iso.edition),
+  iso_path = format("tumbleweed/iso/openSUSE-MicroOS-%s-%s-%s.iso", local.iso.edition, local.iso.arch,
+    local.iso.version == "Current" ? local.iso.version : format("%s-Media", local.iso.version),
   )
+  iso_checksum = lookup(lookup(lookup(var.iso_checksums, local.iso.version, {}), local.iso.arch, {}), local.iso.edition, "file:https://download.opensuse.org/${local.iso_path}.sha256")
+
 }
 
 variable "vagrantfile_template" {
@@ -211,13 +217,13 @@ local "vagrantfile" {
   }
 }
 
-source "null" "centos" {
+source "null" "microos" {
   communicator = "none"
 }
 
 build {
-  source "null.centos" {
-    name = "build-centos"
+  source "null.microos" {
+    name = "build-microos"
   }
   provisioner "shell-local" {
     inline = [

@@ -19,17 +19,19 @@ variable "iso_vault_checksum_file" {
 
 variable "iso_mirrors" {
   default = [
-    "file:///srv/centos", # setup an nfs mount to your nas with mirrored content ...
-    "http://centos-distro.cavecreek.net/centos",
-    "http://mirror.rackspace.com/CentOS",
-    "http://mirror.arizona.edu/centos",
-    "http://ftp.osuosl.org/pub/centos",
-    "http://linuxsoft.cern.ch/centos-vault",
-    "http://mirror.nsc.liu.se/centos-store",
-    "http://ftp.iij.ad.jp/pub/linux/centos",
-    "http://ftp.iij.ad.jp/pub/linux/centos-vault",
-    "http://archive.kernel.org/centos",
-    "http://archive.kernel.org/centos-vault",
+    "_mirror/centos", # local first
+    "/srv/mirror/centos", # setup an nfs mount to your nas with mirrored content ...
+    "https://download-ib01.fedoraproject.org/pub/centos/",
+    "https://download-ib01.fedoraproject.org/pub/centos-altarch/",
+    "https://mirror.rackspace.com/CentOS",
+    "https://mirror.arizona.edu/centos",
+    "https://ftp.osuosl.org/pub/centos",
+    "https://linuxsoft.cern.ch/centos-vault",
+    "https://mirror.nsc.liu.se/centos-store",
+    "https://ftp.iij.ad.jp/pub/linux/centos",
+    "https://ftp.iij.ad.jp/pub/linux/centos-vault",
+    "https://archive.kernel.org/centos",
+    "https://archive.kernel.org/centos-vault",
     "https://vault.centos.org",
   ]
   description = "Visit http://isoredirect.centos.org/centos/7/isos/x86_64/ to see the mirrors closest to you"

@@ -19,7 +19,8 @@ variable "iso_vault_checksum_file" {
 
 variable "iso_mirrors" {
   default = [
-    "file:///srv/fedora", # setup an nfs mount to your nas with mirrored content ...
+    "_mirror/fedora",
+    "/srv/mirror/fedora", # setup an nfs mount to your nas with mirrored content ...
     "https://dl.fedoraproject.org/pub/fedora/",
     "https://download-ib01.fedoraproject.org/pub/fedora/",
     "https://mirror.arizona.edu/pub/fedora",

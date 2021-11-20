@@ -1,0 +1,12 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "fedora/33-cloud-base"
+  %w[hyperv libvirt virtualbox vmware_desktop].each do |p|
+    config.vm.provider p do |v, o|
+      v.memory = "2048"
+      v.cpus = 2
+    end
+  end
+end

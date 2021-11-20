@@ -1,7 +1,7 @@
 source "qemu" "vagrant" {
   boot_command = [
     "<esc><wait>",
-    "linux ${local.kickstart.param}=${local.kickstart.url} ${var.boot_append} DISK=${local.vm.disk_name}",
+    "linux ${local.kickstart.param}=${local.kickstart.url} ${var.boot_append}",
     "<enter><wait>",
   ]
   boot_wait            = var.boot_wait

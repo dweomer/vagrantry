@@ -1,7 +1,8 @@
 source "virtualbox-iso" "vagrant" {
   boot_command = [
-    "<esc><wait>",
-    "linux ${local.kickstart.param}=${local.kickstart.url} ${var.boot_append}",
+    "<esc><enter><wait>",
+    "linux ${var.boot_append}", "<wait>",
+    " ${local.autoyast.param}=${local.autoyast.url}", "<wait>",
     "<enter><wait>",
   ]
   boot_wait            = var.boot_wait
@@ -12,10 +13,10 @@ source "virtualbox-iso" "vagrant" {
   iso_interface        = local.vm.disk_type
   format               = local.output.format
   guest_additions_mode = "disable"
-  guest_os_type        = "RedHat_64"
+  guest_os_type        = "OpenSUSE_64"
   headless             = var.headless
-  http_directory       = local.kickstart.dir
-  iso_checksum         = lookup(lookup(lookup(var.iso_checksums, local.iso.version, {}), local.iso.arch, {}), local.iso.edition, "file:https://dl.fedoraproject.org/pub/fedora/linux/releases/${local.semver_major}/Server/${local.iso.arch}/iso/${local.iso.vault.checksum_file}")
+  http_directory       = local.autoyast.dir
+  iso_checksum         = local.iso_checksum
   iso_target_path      = local.iso.target.path
   iso_target_extension = local.iso.target.extension
   iso_urls             = formatlist("%s/%s", distinct(var.iso_mirrors), local.iso_path)
@@ -53,6 +54,13 @@ build {
     content {
       name = source.value
     }
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo /usr/share/vagrantry/seal.sh",
+      "export HISTSIZE=0",
+    ]
   }
 
   post-processors {

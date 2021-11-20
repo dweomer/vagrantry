@@ -1,0 +1,10 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  unless ['no', 'nope', 'false'].include?(ENV.fetch('VAGRANTRY',true).to_s.downcase)
+    config.vm.boot_timeout = ENV.fetch('VAGRANTRY_VM_BOOT_TIMEOUT',500).to_i
+    config.vm.synced_folder ENV.fetch('VAGRANTRY_VM_SYNC_SRC','.').to_s, ENV.fetch('VAGRANTRY_VM_SYNC_DST','/vagrant').to_s,
+      disabled: ENV.fetch('VAGRANTRY_VM_SYNC_DISABLED',true), type: ENV.fetch('VAGRANTRY_VM_SYNC_TYPE','rsync').to_s
+  end
+end

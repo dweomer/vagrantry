@@ -1,7 +1,7 @@
 source "vmware-iso" "vagrant" {
   boot_command = [
     "<esc><wait>",
-    "linux ${local.kickstart.param}=${local.kickstart.url} ${var.boot_append} DISK=${local.vm.disk_name}",
+    "linux ${local.kickstart.param}=${local.kickstart.url} ${var.boot_append}",
     "<enter><wait>",
   ]
   boot_wait            = var.boot_wait
@@ -9,7 +9,7 @@ source "vmware-iso" "vagrant" {
   memory               = local.vm.memory
   disk_size            = local.vm.disk_size
   disk_adapter_type    = local.vm.disk_type
-  cdrom_adapter_type   = local.vm.disk_type
+  cdrom_adapter_type   = "ide"
   format               = local.output.format
   guest_os_type        = "fedora64Guest"
   headless             = var.headless

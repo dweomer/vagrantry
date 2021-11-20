@@ -15,7 +15,7 @@ variable "defaults" {
     },
     vmware = {
       disk_name     = "sda"
-      disk_type     = "ide"
+      disk_type     = "sata"
       nic_type      = "e1000"
       output_format = "vmx"
     },
@@ -96,7 +96,7 @@ variable "kickstart_param" {
 local "kickstart" {
   expression = {
     dir   = coalesce(var.kickstart_dir, "${path.root}/kickstart")
-    url   = coalesce(var.kickstart_url, "http://{{ .HTTPIP }}:{{ .HTTPPort }}/${local.semver_major}/${local.iso.edition}.cfg")
+    url   = coalesce(var.kickstart_url, "http://{{ .HTTPIP }}:{{ .HTTPPort }}/${local.semver_major}/${var.provider}.cfg")
     param = coalesce(var.kickstart_param, "inst.ks")
   }
 }
@@ -108,12 +108,12 @@ variable "boot_wait" {
 
 variable "boot_append" {
   type    = string
-  default = "net.ifnames=0 biosdevname=0"
+  default = ""
 }
 
 variable "cpus" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "disk_size" {
@@ -133,7 +133,7 @@ variable "disk_name" {
 
 variable "memory" {
   type        = number
-  default     = 1024
+  default     = 2048
   description = "megabytes"
 }
 

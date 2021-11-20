@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <bootloader>
+    <global>
+      <append>biosdevname=0 net.ifnames=0</append>
+      <generic_mbr>true</generic_mbr>
+      <gfxmode>auto</gfxmode>
+      <secure_boot>false</secure_boot>
+      <terminal>gfxterm</terminal>
+      <timeout config:type="integer">0</timeout>
+      <update_nvram>true</update_nvram>
+    </global>
+  </bootloader>
+
+  <general>
+    <ask-list config:type="list"/>
+    <mode>
+      <confirm config:type="boolean">false</confirm>
+      <second_stage config:type="boolean">false</second_stage>
+    </mode>
+    <storage>
+      <start_multipath config:type="boolean">false</start_multipath>
+    </storage>
+  </general>
+
+  <partitioning config:type="list">
+    <drive>
+      <device>/dev/sda</device>
+      <use>all</use>
+      <partitions config:type="list">
+        <partition>
+          <mount>/boot/efi</mount>
+          <size>256mb</size>
+          <filesystem config:type="symbol">vfat</filesystem>
+        </partition>
+        <partition>
+          <mount>/</mount>
+          <size>8gb</size>
+          <subvolumes config:type="list">
+            <subvolume>
+              <path>root</path>
+            </subvolume>
+            <subvolume>
+              <path>home</path>
+            </subvolume>
+            <subvolume>
+              <path>opt</path>
+            </subvolume>
+            <subvolume>
+              <path>srv</path>
+            </subvolume>
+            <subvolume>
+              <path>boot/writable</path>
+            </subvolume>
+            <subvolume>
+              <path>usr/local</path>
+            </subvolume>
+            <subvolume>
+              <path>boot/grub2/i386-pc</path>
+            </subvolume>
+            <subvolume>
+              <path>boot/grub2/x86_64-efi</path>
+            </subvolume>
+            <subvolume>
+              <path>vagrant</path>
+            </subvolume>
+          </subvolumes>
+        </partition>
+        <partition>
+          <filesystem config:type="symbol">btrfs</filesystem>
+          <mount>/var</mount>
+          <size>max</size>
+        </partition>
+      </partitions>
+    </drive>
+  </partitioning>
+
+  <keyboard>
+    <keymap>english-us</keymap>
+  </keyboard>
+
+  <language>
+    <language>en_US</language>
+  </language>
+
+  <timezone>
+    <hwclock>UTC</hwclock>
+    <timezone>Etc/UTC</timezone>
+  </timezone>
+
+  <networking>
+    <dhcp_options>
+      <dhclient_client_id/>
+      <dhclient_hostname_option>AUTO</dhclient_hostname_option>
+    </dhcp_options>
+    <dns>
+      <dhcp_hostname config:type="boolean">true</dhcp_hostname>
+      <resolv_conf_policy>auto</resolv_conf_policy>
+      <write_hostname config:type="boolean">false</write_hostname>
+    </dns>
+    <interfaces config:type="list">
+      <interface>
+        <bootproto>dhcp</bootproto>
+        <device>eth0</device>
+        <dhclient_set_default_route>yes</dhclient_set_default_route>
+        <startmode>auto</startmode>
+      </interface>
+      <interface>
+        <bootproto>static</bootproto>
+        <device>lo</device>
+        <firewall>no</firewall>
+        <ipaddr>127.0.0.1</ipaddr>
+        <netmask>255.0.0.0</netmask>
+        <network>127.0.0.0</network>
+        <prefixlen>8</prefixlen>
+        <startmode>nfsroot</startmode>
+        <usercontrol>no</usercontrol>
+      </interface>
+    </interfaces>
+    <ipv6 config:type="boolean">true</ipv6>
+    <keep_install_network config:type="boolean">false</keep_install_network>
+    <setup_before_proposal config:type="boolean">true</setup_before_proposal>
+    <managed config:type="boolean">false</managed>
+    <routing>
+      <ipv4_forward config:type="boolean">false</ipv4_forward>
+      <ipv6_forward config:type="boolean">false</ipv6_forward>
+    </routing>
+  </networking>
+
+  <add-on>
+    <add_on_others config:type="list">
+      <listentry>
+        <media_url>http://download.opensuse.org/tumbleweed/repo/oss/</media_url>
+        <alias>tumbleweed-oss</alias>
+        <name>openSUSE-Tumbleweed-Oss</name>
+      </listentry>
+      <listentry>
+        <media_url>http://download.opensuse.org/tumbleweed/repo/non-oss/</media_url>
+        <alias>tumbleweed-non-oss</alias>
+        <name>openSUSE-Tumbleweed-Non-Oss</name>
+      </listentry>
+      <listentry>
+        <media_url>http://download.opensuse.org/update/tumbleweed/</media_url>
+        <alias>tumbleweed-update</alias>
+        <name>openSUSE-Tumbleweed-Update</name>
+      </listentry>
+    </add_on_others>
+  </add-on>
+
+  <software>
+    <install_recommended config:type="boolean">false</install_recommended>
+    <kernel>kernel-default-base</kernel>
+    <patterns config:type="list">
+      <pattern>microos_base</pattern>
+      <pattern>microos_base_zypper</pattern>
+      <pattern>microos_selinux</pattern>
+    </patterns>
+    <packages config:type="list">
+      <package>audit</package>
+      <package>bash-completion</package>
+      <package>btrfsprogs</package>
+      <package>coreutils</package>
+      <package>file</package>
+      <package>file-magic</package>
+      <package>findutils</package>
+      <package>gptfdisk</package>
+      <package>gzip</package>
+      <package>hostname</package>
+      <package>nfs-client</package>
+      <package>openssh-clients</package>
+      <package>openssh-server</package>
+      <package>rsync</package>
+      <package>sshfs</package>
+      <package>system-group-audit</package>
+      <package>tar</package>
+      <package>virt-what</package>
+      <package>open-vm-tools</package>
+      <package>open-vm-tools-sdmp</package>
+      <package>zstd</package>
+    </packages>
+    <remove-packages config:type="list">
+      <package>ucode-intel</package>
+      <package>os-prober</package>
+    </remove-packages>
+  </software>
+
+  <scripts>
+    <chroot-scripts config:type="list">
+      <script>
+        <chrooted config:type="boolean">false</chrooted>
+        <filename>vagrantry-autoinstall-profile</filename>
+        <source>
+<![CDATA[
+mkdir -p /mnt/usr/share/vagrantry
+cp -vf /tmp/profile/autoinst.xml /mnt/usr/share/vagrantry/
+]]>
+        </source>
+      </script>
+      <script>
+        <chrooted config:type="boolean">true</chrooted>
+        <filename>vagrantry-insecure-authorized-key</filename>
+        <source>
+<![CDATA[
+mkdir -p -m 0700 /home/vagrant/.ssh/
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key" > /home/vagrant/.ssh/authorized_keys
+chmod 0600 /home/vagrant/.ssh/authorized_keys
+chown -R vagrant:vagrant /home/vagrant/
+]]>
+        </source>
+      </script>
+    </chroot-scripts>
+  </scripts>
+
+  <services-manager config:type="map">
+    <default_target>multi-user</default_target>
+    <services config:type="map">
+      <enable config:type="list">
+        <service>sshd</service>
+      </enable>
+    </services>
+  </services-manager>
+
+  <user_defaults config:type="map">
+    <expire/>
+    <group>100</group>
+    <groups/>
+    <home>/home</home>
+    <inactive>-1</inactive>
+    <no_groups config:type="boolean">true</no_groups>
+    <shell>/bin/bash</shell>
+    <skel/>
+    <umask>022</umask>
+  </user_defaults>
+
+  <groups config:type="list">
+    <group>
+      <gid>100</gid>
+      <groupname>users</groupname>
+      <userlist>vagrant</userlist>
+    </group>
+    <group>
+      <gid>480</gid>
+      <groupname>audit</groupname>
+      <userlist>vagrant</userlist>
+    </group>
+    <group>
+      <gid>1000</gid>
+      <groupname>vagrant</groupname>
+    </group>
+  </groups>
+
+  <users config:type="list">
+    <user config:type="map">
+      <username>vagrant</username>
+      <user_password>vagrant</user_password>
+      <uid>1000</uid>
+      <gid>1000</gid>
+      <encrypted config:type="boolean">false</encrypted>
+      <home_btrfs_subvolume config:type="boolean">false</home_btrfs_subvolume>
+    </user>
+    <user config:type="map">
+      <username>root</username>
+      <user_password>vagrant</user_password>
+      <encrypted config:type="boolean">false</encrypted>
+      <home_btrfs_subvolume config:type="boolean">false</home_btrfs_subvolume>
+    </user>
+  </users>
+
+  <files config:type="list">
+    <file>
+      <file_path>/etc/sudoers.d/vagrant</file_path>
+      <file_contents>
+<![CDATA[
+vagrant ALL=(ALL) NOPASSWD: ALL
+]]>
+      </file_contents>
+      <file_owner>root.root</file_owner>
+      <file_permissions>440</file_permissions>
+    </file>
+    <file>
+      <file_path>/etc/zypp/repos.d/tumbleweed-debug.repo</file_path>
+      <file_owner>root.root</file_owner>
+      <file_permissions>644</file_permissions>
+      <file_contents>
+<![CDATA[
+[tumbleweed-debug]
+name=openSUSE-Tumbleweed-Debug
+enabled=0
+autorefresh=1
+baseurl=http://download.opensuse.org/debug/tumbleweed/repo/oss/
+]]>
+      </file_contents>
+    </file>
+    <file>
+      <file_path>/etc/zypp/repos.d/tumbleweed-source.repo</file_path>
+      <file_owner>root.root</file_owner>
+      <file_permissions>644</file_permissions>
+      <file_contents>
+<![CDATA[
+[tumbleweed-source]
+name=openSUSE-Tumbleweed-Source
+enabled=0
+autorefresh=1
+baseurl=http://download.opensuse.org/source/tumbleweed/repo/oss/
+]]>
+      </file_contents>
+    </file>
+    <file>
+      <file_path>/usr/share/vagrantry/seal.sh</file_path>
+      <file_owner>root.root</file_owner>
+      <file_permissions>755</file_permissions>
+      <file_contents>
+<![CDATA[
+#!/usr/bin/env bash
+export PATH=/sbin:/usr/sbin:/usr/local/sbin:/root/bin:/usr/local/bin:/usr/bin:/bin
+set -eux -o pipefail
+
+# cleanup the dangling snapshot
+snapper delete 2 || true
+transactional-update --no-selfupdate cleanup
+snapper list
+
+# delete some stuff
+rm -frv \
+  /etc/udev/rules.d/70-persistent-net.rules \
+  /etc/zypp/repos.d/openSUSE-MicroOS-* \
+  /root/inst-sys \
+  /var/cache/zypp/* \
+  /var/lib/systemd/random-seed \
+  /var/lib/zypp/AnonymousUniqueId \
+  /var/log/journal/* \
+  /var/log/YaST2
+find /tmp /var/tmp -type f -mindepth 1 -maxdepth 1 -delete
+find /tmp /var/tmp -type d -mindepth 1 -maxdepth 1 -exec rm -rvf {} \;
+
+# truncate logs
+find /var/log -type f -exec truncate --size=0 {} \;
+
+# reset the machine id
+truncate --size=0 /etc/machine-id
+
+]]>
+      </file_contents>
+    </file>
+    <file>
+      <file_path>/vagrant/</file_path>
+      <file_owner>1000.1000</file_owner>
+      <file_permissions>755</file_permissions>
+    </file>
+  </files>
+
+  <suse_register>
+    <do_registration config:type="boolean">false</do_registration>
+  </suse_register>
+</profile>
