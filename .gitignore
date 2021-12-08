@@ -1,2 +1,3 @@
-_mirror/
-_output/
+_mirror*/
+_output*/
+.bak/
